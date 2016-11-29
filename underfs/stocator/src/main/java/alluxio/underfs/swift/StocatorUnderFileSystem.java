@@ -116,6 +116,9 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
   @Override
   public boolean delete(String path, boolean recursive) throws IOException {
     LOG.debug("Delete method: {}, recursive {}", path, recursive);
+    if (PathUtils.isTemporaryFileName(path)) {
+      return true;
+    }
     return mFileSystem.delete(new Path(path), recursive);
   }
 
@@ -135,6 +138,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
    */
   @Override
   public long getBlockSizeByte(String path) throws IOException {
+	LOG.debug("{}",path);
     return Configuration.getBytes(PropertyKey.USER_BLOCK_SIZE_BYTES_DEFAULT);
   }
 
@@ -160,6 +164,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
 
   @Override
   public long getFileSize(String path) throws IOException {
+	LOG.debug("{}",path);
     Path tPath = new Path(path);
     try {
       FileStatus fs = mFileSystem.getFileStatus(tPath);
@@ -172,6 +177,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
 
   @Override
   public long getModificationTimeMs(String path) throws IOException {
+	LOG.debug("{}",path);
     Path tPath = new Path(path);
     if (!mFileSystem.exists(tPath)) {
       throw new FileNotFoundException(path);
@@ -183,16 +189,19 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
   // This call is currently only used for the web ui, where a negative value implies unknown.
   @Override
   public long getSpace(String path, SpaceType type) throws IOException {
+	LOG.debug("{}",path);
     return -1;
   }
 
   @Override
   public boolean isFile(String path) throws IOException {
+	LOG.debug("{}",path);
     return mFileSystem.isFile(new Path(path));
   }
 
   @Override
   public String[] list(String path) throws IOException {
+	LOG.debug("{}",path);
     FileStatus[] files;
     try {
       files = mFileSystem.listStatus(new Path(path));
@@ -219,6 +228,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
 
   @Override
   public boolean mkdirs(String path, MkdirsOptions options) throws IOException {
+	LOG.debug("{}",path);
     return mFileSystem.mkdirs(new Path(path));
   }
 
@@ -254,36 +264,46 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
   }
 
   @Override
-  public void setConf(Object conf) {}
+  public void setConf(Object conf) {
+	  LOG.debug("{}",conf);
+  }
 
   // No ACL integration currently, no-op
   @Override
-  public void setOwner(String path, String user, String group) {}
+  public void setOwner(String path, String user, String group) {
+	  LOG.debug("{}",path);
+  }
 
   // No ACL integration currently, no-op
   @Override
-  public void setMode(String path, short mode) throws IOException {}
+  public void setMode(String path, short mode) throws IOException {
+	  LOG.debug("{}",path);
+  }
 
   // No ACL integration currently, returns default empty value
   @Override
   public String getOwner(String path) throws IOException {
+	  LOG.debug("{}",path);
     return "";
   }
 
   // No ACL integration currently, returns default empty value
   @Override
   public String getGroup(String path) throws IOException {
+	  LOG.debug("{}",path);
     return "";
   }
 
   // No ACL integration currently, returns default value
   @Override
   public short getMode(String path) throws IOException {
+	  LOG.debug("{}",path);
     return Constants.DEFAULT_FILE_SYSTEM_MODE;
   }
 
   @Override
   public String getUnderFSType() {
+	  LOG.debug("");
     return "swift2d";
   }
 }
