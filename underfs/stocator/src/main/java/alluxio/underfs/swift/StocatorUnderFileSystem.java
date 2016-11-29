@@ -18,6 +18,7 @@ import alluxio.PropertyKey;
 import alluxio.underfs.UnderFileSystem;
 import alluxio.underfs.options.CreateOptions;
 import alluxio.underfs.options.MkdirsOptions;
+import alluxio.util.io.PathUtils;
 
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -99,6 +100,11 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
   @Override
   public FSDataOutputStream create(String path, CreateOptions options)
       throws IOException {
+    LOG.debug("{}",path);
+	if (PathUtils.isTemporaryFileName(path)) {
+		path = PathUtils.getPermanentFileName(path);
+		LOG.debug("Modified path: {}", path);
+	}
     try {
       return FileSystem.create(mFileSystem, new Path(path), null);
     }  catch (IOException e) {
@@ -240,6 +246,10 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
    */
   @Override
   public boolean rename(String source, String destination) throws IOException {
+    LOG.debug("{} to {}",source,destination);
+    if (PathUtils.isTemporaryFileName(source)) {
+      return true;
+    }
     return mFileSystem.rename(new Path(source), new Path(destination));
   }
 
