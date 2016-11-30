@@ -41,25 +41,32 @@ public class StocatorUnderFileSystemFactory implements UnderFileSystemFactory {
 
   @Override
   public UnderFileSystem create(String path, Object unusedConf) {
+    LOG.debug("{}", path);
     Preconditions.checkNotNull(path);
 
-    if (addAndCheckSwiftCredentials()) {
-      try {
-        return new StocatorUnderFileSystem(new AlluxioURI(path));
-      } catch (Exception e) {
-        LOG.error("Failed to create SwiftUnderFileSystem.", e);
-        throw Throwables.propagate(e);
-      }
+    if (path.startsWith(Constants.HEADER_SWIFT2D)) {
+    	if (!addAndCheckSwiftCredentials()) {
+    		String err = "Swift Credentials not available, cannot create Swift Under File System.";
+    	    LOG.error(err);
+    	    throw Throwables.propagate(new IOException(err));
+    	}
     }
-
-    String err = "Swift Credentials not available, cannot create Swift Under File System.";
-    LOG.error(err);
-    throw Throwables.propagate(new IOException(err));
+    try {
+      return new StocatorUnderFileSystem(new AlluxioURI(path));
+    } catch (Exception e) {
+      LOG.error("Failed to create SwiftUnderFileSystem.", e);
+      throw Throwables.propagate(e);
+    }
   }
 
   @Override
   public boolean supportsPath(String path) {
-    return path != null && path.startsWith(Constants.HEADER_SWIFT2D);
+    if (path == null) return false;
+    
+    if (path.startsWith(Constants.HEADER_SWIFT2D)) return true;
+    if (path.startsWith(Constants.HEADER_S3D)) return true;
+    
+    return false;
   }
 
   /**
