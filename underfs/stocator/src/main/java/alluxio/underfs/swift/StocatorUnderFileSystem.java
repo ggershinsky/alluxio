@@ -58,6 +58,12 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
     LOG.debug("Stocator under fs constructor {}", uri.toString());
     org.apache.hadoop.conf.Configuration hConf = new org.apache.hadoop.conf.Configuration();
     hConf.set("fs.swift2d.impl", "com.ibm.stocator.fs.ObjectStoreFileSystem");
+    hConf.set("fs.stocator.scheme.list", "swift2d,s3d"); //TODO
+    hConf.set("fs.stocator.swift2d.impl", "com.ibm.stocator.fs.swift.SwiftAPIClient"); //TODO
+    hConf.set("fs.stocator.swift2d.scheme", "swift2d"); //TODO
+    hConf.set("fs.s3d.impl", "com.ibm.stocator.fs.ObjectStoreFileSystem"); //TODO
+    hConf.set("fs.stocator.s3d.impl","com.ibm.stocator.fs.s3.S3APIClient"); //TODO
+    hConf.set("fs.stocator.s3d.scheme", "s3d"); //TODO
     hConf.set("fs.swift2d.service.srv.auth.url", Configuration.get(PropertyKey.SWIFT_AUTH_URL_KEY));
     hConf.set("fs.swift2d.service.srv.public",
         Configuration.get(PropertyKey.SWIFT_USE_PUBLIC_URI_KEY));
@@ -66,6 +72,9 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
     hConf.set("fs.swift2d.service.srv.username", Configuration.get(PropertyKey.SWIFT_USER_KEY));
     hConf.set("fs.swift2d.service.srv.auth.method",
         Configuration.get(PropertyKey.SWIFT_AUTH_METHOD_KEY));
+    hConf.set("fs.s3d.service.access.key", Configuration.get(PropertyKey.S3A_ACCESS_KEY)); //TODO
+    hConf.set("fs.s3d.service.secret.key", Configuration.get(PropertyKey.S3A_SECRET_KEY)); //TODO
+    hConf.set("fs.s3d.service.endpoint", Configuration.get(PropertyKey.UNDERFS_S3_ENDPOINT)); //TODO
     LOG.debug("Stocator under fs init {}", uri.toString());
     try {
       mFileSystem = FileSystem.get(new URI(uri.toString()) , hConf);
@@ -100,7 +109,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
   @Override
   public FSDataOutputStream create(String path, CreateOptions options)
       throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     if (PathUtils.isTemporaryFileName(path)) {
       path = PathUtils.getPermanentFileName(path);
       LOG.debug("Modified path: {}", path);
@@ -138,7 +147,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
    */
   @Override
   public long getBlockSizeByte(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     return Configuration.getBytes(PropertyKey.USER_BLOCK_SIZE_BYTES_DEFAULT);
   }
 
@@ -164,7 +173,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
 
   @Override
   public long getFileSize(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     Path tPath = new Path(path);
     try {
       FileStatus fs = mFileSystem.getFileStatus(tPath);
@@ -177,7 +186,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
 
   @Override
   public long getModificationTimeMs(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     Path tPath = new Path(path);
     if (!mFileSystem.exists(tPath)) {
       throw new FileNotFoundException(path);
@@ -189,19 +198,19 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
   // This call is currently only used for the web ui, where a negative value implies unknown.
   @Override
   public long getSpace(String path, SpaceType type) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     return -1;
   }
 
   @Override
   public boolean isFile(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     return mFileSystem.isFile(new Path(path));
   }
 
   @Override
   public String[] list(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     FileStatus[] files;
     try {
       files = mFileSystem.listStatus(new Path(path));
@@ -228,7 +237,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
 
   @Override
   public boolean mkdirs(String path, MkdirsOptions options) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     return mFileSystem.mkdirs(new Path(path));
   }
 
@@ -256,7 +265,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
    */
   @Override
   public boolean rename(String source, String destination) throws IOException {
-    LOG.debug("{} to {}",source,destination);
+    LOG.debug("{} to {}", source, destination);
     if (PathUtils.isTemporaryFileName(source)) {
       return true;
     }
@@ -265,39 +274,39 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
 
   @Override
   public void setConf(Object conf) {
-    LOG.debug("{}",conf);
+    LOG.debug("{}", conf);
   }
 
   // No ACL integration currently, no-op
   @Override
   public void setOwner(String path, String user, String group) {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
   }
 
   // No ACL integration currently, no-op
   @Override
   public void setMode(String path, short mode) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
   }
 
   // No ACL integration currently, returns default empty value
   @Override
   public String getOwner(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     return "";
   }
 
   // No ACL integration currently, returns default empty value
   @Override
   public String getGroup(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     return "";
   }
 
   // No ACL integration currently, returns default value
   @Override
   public short getMode(String path) throws IOException {
-    LOG.debug("{}",path);
+    LOG.debug("{}", path);
     return Constants.DEFAULT_FILE_SYSTEM_MODE;
   }
 
