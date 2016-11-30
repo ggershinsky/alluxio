@@ -57,25 +57,28 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
     super(uri);
     LOG.debug("Stocator under fs constructor {}", uri.toString());
     org.apache.hadoop.conf.Configuration hConf = new org.apache.hadoop.conf.Configuration();
-    hConf.set("fs.swift2d.impl", "com.ibm.stocator.fs.ObjectStoreFileSystem");
     hConf.set("fs.stocator.scheme.list", "swift2d,s3d"); //TODO
-    hConf.set("fs.stocator.swift2d.impl", "com.ibm.stocator.fs.swift.SwiftAPIClient"); //TODO
-    hConf.set("fs.stocator.swift2d.scheme", "swift2d"); //TODO
-    hConf.set("fs.s3d.impl", "com.ibm.stocator.fs.ObjectStoreFileSystem"); //TODO
-    hConf.set("fs.stocator.s3d.impl","com.ibm.stocator.fs.s3.S3APIClient"); //TODO
-    hConf.set("fs.stocator.s3d.scheme", "s3d"); //TODO
-    hConf.set("fs.swift2d.service.srv.auth.url", Configuration.get(PropertyKey.SWIFT_AUTH_URL_KEY));
-    hConf.set("fs.swift2d.service.srv.public",
-        Configuration.get(PropertyKey.SWIFT_USE_PUBLIC_URI_KEY));
-    hConf.set("fs.swift2d.service.srv.tenant", Configuration.get(PropertyKey.SWIFT_TENANT_KEY));
-    hConf.set("fs.swift2d.service.srv.password", Configuration.get(PropertyKey.SWIFT_PASSWORD_KEY));
-    hConf.set("fs.swift2d.service.srv.username", Configuration.get(PropertyKey.SWIFT_USER_KEY));
-    hConf.set("fs.swift2d.service.srv.auth.method",
-        Configuration.get(PropertyKey.SWIFT_AUTH_METHOD_KEY));
-    hConf.set("fs.s3d.service.access.key", Configuration.get(PropertyKey.S3A_ACCESS_KEY)); //TODO
-    hConf.set("fs.s3d.service.secret.key", Configuration.get(PropertyKey.S3A_SECRET_KEY)); //TODO
-    hConf.set("fs.s3d.service.endpoint", Configuration.get(PropertyKey.UNDERFS_S3_ENDPOINT)); //TODO
-    LOG.debug("Stocator under fs init {}", uri.toString());
+    if (uri.toString().startsWith(Constants.HEADER_SWIFT2D)) { //TODO
+      hConf.set("fs.swift2d.impl", "com.ibm.stocator.fs.ObjectStoreFileSystem");
+      hConf.set("fs.stocator.swift2d.impl", "com.ibm.stocator.fs.swift.SwiftAPIClient"); //TODO
+      hConf.set("fs.stocator.swift2d.scheme", "swift2d"); //TODO
+      hConf.set("fs.swift2d.service.srv.auth.url", Configuration.get(PropertyKey.SWIFT_AUTH_URL_KEY));
+      hConf.set("fs.swift2d.service.srv.public",
+          Configuration.get(PropertyKey.SWIFT_USE_PUBLIC_URI_KEY));
+      hConf.set("fs.swift2d.service.srv.tenant", Configuration.get(PropertyKey.SWIFT_TENANT_KEY));
+      hConf.set("fs.swift2d.service.srv.password", Configuration.get(PropertyKey.SWIFT_PASSWORD_KEY));
+      hConf.set("fs.swift2d.service.srv.username", Configuration.get(PropertyKey.SWIFT_USER_KEY));
+      hConf.set("fs.swift2d.service.srv.auth.method",
+          Configuration.get(PropertyKey.SWIFT_AUTH_METHOD_KEY));
+    }
+    else {
+      hConf.set("fs.s3d.impl", "com.ibm.stocator.fs.ObjectStoreFileSystem"); //TODO
+      hConf.set("fs.stocator.s3d.impl","com.ibm.stocator.fs.s3.S3APIClient"); //TODO
+      hConf.set("fs.stocator.s3d.scheme", "s3d"); //TODO
+      hConf.set("fs.s3d.service.access.key", Configuration.get(PropertyKey.S3A_ACCESS_KEY)); //TODO
+      hConf.set("fs.s3d.service.secret.key", Configuration.get(PropertyKey.S3A_SECRET_KEY)); //TODO
+      hConf.set("fs.s3d.service.endpoint", Configuration.get(PropertyKey.UNDERFS_S3_ENDPOINT)); //TODO
+    }
     try {
       mFileSystem = FileSystem.get(new URI(uri.toString()) , hConf);
       LOG.debug("Stocator under fs init successfull {}", uri.toString());
