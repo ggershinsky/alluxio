@@ -45,11 +45,11 @@ public class StocatorUnderFileSystemFactory implements UnderFileSystemFactory {
     Preconditions.checkNotNull(path);
 
     if (path.startsWith(Constants.HEADER_SWIFT2D)) {
-    	if (!addAndCheckSwiftCredentials()) {
-    		String err = "Swift Credentials not available, cannot create Swift Under File System.";
-    	    LOG.error(err);
-    	    throw Throwables.propagate(new IOException(err));
-    	}
+      if (!addAndCheckSwiftCredentials()) {
+        String err = "Swift Credentials not available, cannot create Swift Under File System.";
+        LOG.error(err);
+          throw Throwables.propagate(new IOException(err));
+      }
     }
     try {
       return new StocatorUnderFileSystem(new AlluxioURI(path));

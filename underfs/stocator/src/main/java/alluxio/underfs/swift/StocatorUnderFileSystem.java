@@ -71,7 +71,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
       hConf.set("fs.swift2d.service.srv.auth.method",
           Configuration.get(PropertyKey.SWIFT_AUTH_METHOD_KEY));
     }
-    else {
+    else { //TODO
       hConf.set("fs.s3d.impl", "com.ibm.stocator.fs.ObjectStoreFileSystem"); //TODO
       hConf.set("fs.stocator.s3d.impl","com.ibm.stocator.fs.s3.S3APIClient"); //TODO
       hConf.set("fs.stocator.s3d.scheme", "s3d"); //TODO
