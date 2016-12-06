@@ -78,7 +78,7 @@ public class StocatorUnderFileSystem extends UnderFileSystem {
       hConf.set("fs.s3d.service.access.key", Configuration.get(PropertyKey.S3A_ACCESS_KEY)); //TODO
       hConf.set("fs.s3d.service.secret.key", Configuration.get(PropertyKey.S3A_SECRET_KEY)); //TODO
       hConf.set("fs.s3d.service.endpoint", Configuration.get(PropertyKey.UNDERFS_S3_ENDPOINT)); //TODO
-      hConf.set("fs.s3a.threads.max", Configuration.get(PropertyKey.UNDERFS_S3_UPLOAD_THREADS_MAX)); //TODO
+      hConf.set("fs.s3d.threads.max", Configuration.get(PropertyKey.UNDERFS_S3_UPLOAD_THREADS_MAX)); //TODO
     }
     try {
       mFileSystem = FileSystem.get(new URI(uri.toString()) , hConf);
